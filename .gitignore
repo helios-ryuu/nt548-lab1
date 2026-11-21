@@ -1,0 +1,71 @@
+# ==============================================================================
+# NT548 - Lab 01 (.gitignore)
+# Terraform, CloudFormation, AWS Credentials, SSH Keys, OS/IDE & Report Temp
+# ==============================================================================
+
+# --- Terraform ---
+**/.terraform/
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfplan.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Chặn file biến thật (chứa IP cá nhân, key name, account ID...)
+# Giữ lại file mẫu *.tfvars.example và .terraform.lock.hcl để tái lập provider
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+!*.tfvars.json.example
+
+# --- CloudFormation ---
+packaged-*.yaml
+packaged-*.yml
+**/packaged-*.yaml
+**/packaged-*.yml
+.aws-sam/
+
+# --- AWS Credentials, SSH Keys & Secrets ---
+*.pem
+*.ppk
+*.key
+*.pub
+id_rsa
+id_ed25519
+.env
+.env.*
+!.env.example
+credentials
+aws-credentials*
+.aws/
+
+# --- Logs & Test Outputs ---
+*.log
+tmp/
+temp/
+scripts/output/
+
+# --- Word / Office Temp Files (Báo cáo) ---
+~$*.docx
+~$*.doc
+~$*.xlsx
+~$*.pptx
+*.tmp
+
+# --- OS & IDE ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
