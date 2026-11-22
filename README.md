@@ -79,6 +79,7 @@ nt548-lab1/
 ├── README.md                          # Tài liệu tổng quan & hướng dẫn chấm bài
 ├── RUNBOOK.md                         # Sổ tay thao tác chi tiết (SOP), test cases & Git cheatsheet
 ├── WBS.md                             # Phân rã công việc & lịch trình 21/11/2026 - 10/12/2026
+├── GROUP_6_LAB_REPORT.docx            # File Báo cáo Word Lab 01
 ├── .gitignore                         # Chặn state, credentials, .pem, file tạm Word
 ├── terraform/                         # Hạ tầng AWS bằng Terraform (Module hóa)
 │   ├── main.tf
@@ -102,8 +103,7 @@ nt548-lab1/
 │   └── check-aws-cleanup.sh
 └── docs/
     ├── diagrams/                      # Sơ đồ kiến trúc (Draw.io / PNG)
-    ├── evidence/                      # Ảnh chụp minh chứng cho Báo cáo Word
-    └── report/                        # Bản thảo & file Báo cáo Word hoàn chỉnh
+    └── evidence/                      # Ảnh chụp minh chứng cho Báo cáo Word
 ```
 
 ---

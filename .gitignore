@@ -60,6 +60,12 @@ scripts/output/
 ~$*.pptx
 *.tmp
 
+# --- Python Virtual Environment (cfn-lint) ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+
 # --- OS & IDE ---
 .DS_Store
 Thumbs.db

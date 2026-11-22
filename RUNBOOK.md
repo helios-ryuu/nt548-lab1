@@ -33,20 +33,24 @@ Tài liệu này là quy trình thao tác chuẩn (SOP) dành cho **Tech Lead** 
    ```
    > **Lưu ý:** Nếu đang làm việc gần hết 4 tiếng, bấm lại nút **Start Lab** để gia hạn timer và cập nhật lại `aws_session_token` mới.
 
-### 1.3. Chuẩn bị SSH Key Pair & lấy IP cá nhân (`/32`)
+### 1.3. Chuẩn bị SSH Key Pair có sẵn (`vockey`) & lấy IP cá nhân (`/32`)
+1. Trên trang **AWS Details** của Learner Lab, tại mục **SSH key**, bấm **Download PEM** để tải file `labsuser.pem` (tên Key Pair có sẵn trên AWS EC2 là **`vockey`**).
+2. Di chuyển file `.pem` vào `~/.ssh/`, khóa quyền và kiểm tra lại Key Pair + IP cá nhân:
 ```bash
+# Đưa file labsuser.pem vào ~/.ssh và khóa quyền chỉ đọc cho chủ sở hữu
+mkdir -p ~/.ssh
+mv ~/Downloads/labsuser.pem ~/.ssh/labsuser.pem
+chmod 400 ~/.ssh/labsuser.pem
+
+# Xác nhận Key Pair vockey đã tồn tại trên AWS EC2 (us-east-1)
+aws ec2 describe-key-pairs --query 'KeyPairs[].KeyName' --output text
+# Kỳ vọng: vockey
+
 # Lấy Public IP hiện tại của máy cá nhân
 MY_IP=$(curl -s https://checkip.amazonaws.com)
 echo "My IP CIDR: ${MY_IP}/32"
-
-# Tạo SSH Key Pair mới trên AWS (hoặc dùng Key Pair có sẵn vockey của Learner Lab)
-aws ec2 create-key-pair \
-  --key-name nt548-lab1-key \
-  --query 'KeyMaterial' \
-  --output text > ~/.ssh/nt548-lab1-key.pem
-chmod 400 ~/.ssh/nt548-lab1-key.pem
 ```
-> **Cấm tuyệt đối:** Không lưu file `.pem` vào trong thư mục repo Git. Luôn giữ `.pem` ở `~/.ssh/`.
+> **Cấm tuyệt đối:** Không lưu file `.pem` vào trong thư mục repo Git. Luôn giữ `labsuser.pem` ở `~/.ssh/`.
 
 ---
 
@@ -54,11 +58,12 @@ chmod 400 ~/.ssh/nt548-lab1-key.pem
 
 ### 2.1. Cấu hình biến và triển khai
 ```bash
+mkdir -p /home/helios/main/projects/nt548-lab1/terraform
 cd /home/helios/main/projects/nt548-lab1/terraform
 
 # Tạo file biến local (file này đã được .gitignore chặn)
 cp terraform.tfvars.example terraform.tfvars
-# Chỉnh sửa my_ip_cidr = "<MY_IP>/32" và key_name = "nt548-lab1-key"
+# Chỉnh sửa my_ip_cidr = "<MY_IP>/32" và key_name = "vockey"
 
 # Khởi tạo, kiểm tra format/cú pháp, xem kế hoạch và áp dụng
 terraform init
@@ -88,7 +93,22 @@ rm -f lab1.tfplan
 
 ## SOP 3 — Triển Khai & Hủy Hạ Tầng Bằng CloudFormation (Nested Stacks)
 
-### 3.1. Bootstrap S3 Bucket & Upload Nested Templates
+### 3.1. Chuẩn bị `cfn-lint` trong Python Virtual Environment (`.venv`)
+Thư mục `.venv/` đã được chặn trong `.gitignore`, phù hợp để cài `cfn-lint` cục bộ cho dự án mà không ảnh hưởng môi trường hệ thống:
+```bash
+cd /home/helios/main/projects/nt548-lab1
+
+# Cài đặt lần đầu (chỉ cần chạy 1 lần)
+python3 -m venv .venv
+source .venv/bin/activate
+pip install cfn-lint
+
+# Xác nhận cfn-lint hoạt động
+cfn-lint --version
+```
+> **Lưu ý:** Ở các phiên terminal sau, chỉ cần chạy `source .venv/bin/activate` (tại thư mục gốc repo) trước khi gọi `cfn-lint`. Sau khi dùng xong có thể thoát bằng lệnh `deactivate`.
+
+### 3.2. Bootstrap S3 Bucket & Upload Nested Templates
 ```bash
 export AWS_REGION=us-east-1
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -97,17 +117,18 @@ export CFN_BUCKET="nt548-lab1-cfn-${ACCOUNT_ID}-${AWS_REGION}"
 # Tạo bucket (bỏ qua nếu đã tồn tại)
 aws s3 mb "s3://${CFN_BUCKET}" --region "${AWS_REGION}" || true
 
-# Kiểm tra cú pháp từng file template trước khi upload
-cfn-lint cloudformation/main.yaml cloudformation/templates/*.yaml || true
+# Đảm bảo đã kích hoạt .venv trước khi chạy cfn-lint
+source .venv/bin/activate
+cfn-lint cloudformation/main.yaml cloudformation/templates/*.yaml
 
 # Upload các nested template lên S3
 aws s3 sync cloudformation/templates/ "s3://${CFN_BUCKET}/templates/" --delete
 ```
 
-### 3.2. Triển khai Root Stack
+### 3.3. Triển khai Root Stack
 ```bash
 MY_IP=$(curl -s https://checkip.amazonaws.com)
-
+export MY_IP
 aws cloudformation deploy \
   --stack-name nt548-lab1-stack \
   --template-file cloudformation/main.yaml \
@@ -115,7 +136,7 @@ aws cloudformation deploy \
     TemplateBucketName="${CFN_BUCKET}" \
     TemplatePrefix="templates" \
     MyIpCidr="${MY_IP}/32" \
-    KeyName="nt548-lab1-key" \
+    KeyName="vockey" \
   --region "${AWS_REGION}"
 
 # Xem Outputs của Stack (Public IP, Private IP, VPC ID...)
@@ -127,7 +148,7 @@ aws cloudformation describe-stacks \
 
 > **Lưu ý về Default SG trong CloudFormation:** AWS không hỗ trợ tạo resource mới thay thế Default SG mặc định của VPC. Stack xuất `!GetAtt VPC.DefaultSecurityGroup` để chứng minh sự tồn tại và tạo bổ sung baseline SG (hoặc tài liệu hóa rõ ràng trong báo cáo).
 
-### 3.3. Xóa Stack ngay sau khi kiểm thử xong
+### 3.4. Xóa Stack ngay sau khi kiểm thử xong
 ```bash
 aws cloudformation delete-stack --stack-name nt548-lab1-stack --region us-east-1
 aws cloudformation wait stack-delete-complete --stack-name nt548-lab1-stack --region us-east-1
@@ -166,7 +187,7 @@ aws ec2 describe-security-groups --filters "Name=vpc-id,Values=<VPC_ID>" \
 
 ### 4.2. TC-03 — SSH từ máy cá nhân vào Public EC2
 ```bash
-ssh -i ~/.ssh/nt548-lab1-key.pem ec2-user@<PUBLIC_IP>
+ssh -i ~/.ssh/labsuser.pem ec2-user@<PUBLIC_IP>
 # Kỳ vọng: Đăng nhập thành công; chạy `hostname -I` thấy Private IP thuộc Public Subnet.
 exit
 ```
@@ -179,7 +200,7 @@ aws ec2 describe-instances --filters "Name=vpc-id,Values=<VPC_ID>" \
   --output table
 
 # Thử SSH trực tiếp vào Private IP (sẽ timeout sau 5 giây)
-ssh -i ~/.ssh/nt548-lab1-key.pem -o ConnectTimeout=5 ec2-user@<PRIVATE_IP>
+ssh -i ~/.ssh/labsuser.pem -o ConnectTimeout=5 ec2-user@<PRIVATE_IP>
 # Kỳ vọng: Connection timed out (chứng minh Private EC2 bị cách ly khỏi Internet).
 ```
 
@@ -187,7 +208,7 @@ ssh -i ~/.ssh/nt548-lab1-key.pem -o ConnectTimeout=5 ec2-user@<PRIVATE_IP>
 > **An toàn bảo mật:** Dùng `-J` (`ProxyJump`) để giữ private key `.pem` hoàn toàn trên máy cá nhân, **tuyệt đối không `scp` file `.pem` lên Public EC2**.
 
 ```bash
-ssh -i ~/.ssh/nt548-lab1-key.pem \
+ssh -i ~/.ssh/labsuser.pem \
     -J ec2-user@<PUBLIC_IP> \
     ec2-user@<PRIVATE_IP>
 ```
@@ -252,7 +273,7 @@ aws cloudformation list-stacks \
 - **TV1 — Ngô Tiến Sỹ (`23521367`, Tech Lead):** `terraform/`, `cloudformation/`, `scripts/`
 - **TV2 — Trần Hồng Phúc (`23521222`, App Dev & Test Support):** `docs/evidence/test-logs/`
 - **TV3 — Điền Quốc Huy (`23520600`, QA & Evidence):** `docs/evidence/`
-- **TV4 — Đặng Thế Long (`22520804`, Diagrams, Report & Docs):** `docs/diagrams/`, `docs/report/`, cập nhật tiến độ `WBS.md`
+- **TV4 — Đặng Thế Long (`22520804`, Diagrams, Report & Docs):** `docs/diagrams/`, `GROUP_6_LAB_REPORT.docx`, cập nhật tiến độ `WBS.md`
 
 ### 6.3. Cheatsheet Git 5 Lệnh Tối Giản (Dành cho Phúc, Huy, Long)
 Mỗi thành viên chỉ làm việc trên thư mục của mình và chạy đúng 5 bước sau mỗi lần cập nhật:

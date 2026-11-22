@@ -40,9 +40,9 @@ flowchart LR
 | Mã WBS | Giai Đoạn & Đầu Việc | Thời Gian | R | S | Sản Phẩm Đầu Ra (Deliverable) | Định Nghĩa Hoàn Thành (DoD) | Trạng Thái |
 | :---: | :--- | :---: | :-: | :-: | :--- | :--- | :---: |
 | **1.1** | **Khởi Tạo Repo & Xác Minh AWS Learner Lab** | **21/11 – 22/11** | | | | | |
-| 1.1.1 | Tạo repo GitHub `nt548-lab1`, đẩy 4 file nền (`README.md`, `RUNBOOK.md`, `.gitignore`, `WBS.md`), thêm 3 thành viên làm collaborator | 21/11 – 22/11 | TV1 | TV4 | Repo GitHub có commit đầu tiên | 4 thành viên clone và `git pull` thành công | `[ ]` |
-| 1.1.2 | Hoàn thành **Module Knowledge Check (≥ 70/100)**, mở Learner Lab, kiểm tra tài liệu `Learner Lab Resources` & `aws sts get-caller-identity` (`us-east-1`) | 22/11 | TV1 | TV2 | Xác nhận credentials `us-east-1` + danh sách dịch vụ | Chạy được AWS CLI & xác định trước quyền dùng cho Lab 01 và Lab 02 | `[ ]` |
-| 1.1.3 | Dựng khung Báo cáo Word Lab 01 từ file đề PDF (mở rộng bảng lên **4 thành viên**, điền thông tin lớp/MSSV/phân công) | 22/11 | TV4 | TV3 | `docs/report/NT548-Lab01-Report-Draft.docx` | Khung báo cáo đúng chuẩn mẫu Khoa MMT&TT | `[ ]` |
+| 1.1.1 | Tạo repo GitHub `nt548-lab1`, đẩy 4 file nền (`README.md`, `RUNBOOK.md`, `.gitignore`, `WBS.md`), thêm 3 thành viên làm collaborator | 21/11 – 22/11 | TV1 | TV4 | Repo GitHub có commit đầu tiên | 4 thành viên clone và `git pull` thành công | `[x]` |
+| 1.1.2 | Hoàn thành **Module Knowledge Check (≥ 70/100)**, mở Learner Lab, kiểm tra tài liệu `Learner Lab Resources` & `aws sts get-caller-identity` (`us-east-1`) | 22/11 | TV1 | TV2 | Xác nhận credentials `us-east-1` + danh sách dịch vụ | Chạy được AWS CLI & xác định trước quyền dùng cho Lab 01 và Lab 02 | `[x]` |
+| 1.1.3 | Dựng khung Báo cáo Word Lab 01 từ file đề PDF (mở rộng bảng lên **4 thành viên**, điền thông tin lớp/MSSV/phân công) | 22/11 | TV4 | TV3 | `GROUP_6_LAB_REPORT.docx` | Khung báo cáo đúng chuẩn mẫu Khoa MMT&TT | `[x]` |
 | **1.2** | **Triển Khai & Kiểm Thử Phần Terraform (Module Hóa)** | **23/11 – 26/11** | | | | | |
 | 1.2.1 | Thiết kế cấu trúc `terraform/` & viết `modules/vpc` (VPC, Public/Private Subnets, IGW, `aws_default_security_group` đóng rule, NAT GW + EIP, Public/Private Route Tables) | 23/11 – 24/11 | TV1 | — | `terraform/modules/vpc/*` | `terraform fmt`, `validate`, `plan` xanh không cảnh báo | `[ ]` |
 | 1.2.2 | Viết `modules/security_group` (Public SG chỉ TCP 22 từ `/32`, Private SG chỉ TCP 22 từ Public SG) & `modules/ec2` (2 EC2 với IMDSv2, EBS encrypt sẵn cho Lab 02) | 24/11 – 25/11 | TV1 | — | `terraform/modules/security_group/*`, `modules/ec2/*`, root `main.tf` | `terraform apply` tạo đủ toàn bộ tài nguyên trên `us-east-1` | `[ ]` |
@@ -54,7 +54,7 @@ flowchart LR
 | 1.3.3 | Chụp bộ ảnh minh chứng CloudFormation (`cfn-01` → `cfn-05`), xóa stack (`delete-stack`) & xác minh 0 NAT GW / 0 EIP sót | 29/11 | TV3 | TV1, TV2 | Bộ ảnh `docs/evidence/cfn-*.png` | Stack ở trạng thái `DELETE_COMPLETE`; AWS sạch tài nguyên | `[ ]` |
 | **1.4** | **Hoàn Thiện Sơ Đồ, Báo Cáo Word & Tài Liệu Lab 01** | **29/11 – 30/11** | | | | | |
 | 1.4.1 | Vẽ sơ đồ kiến trúc mạng VPC hoàn chỉnh bằng Draw.io (có CIDR, Route Tables, NAT GW + EIP, Security Groups, luồng SSH `ProxyJump`) | 29/11 | TV4 | TV1 | `docs/diagrams/lab1-vpc-architecture.png` | Sơ đồ khớp 100% với CIDR và cấu hình thực tế | `[ ]` |
-| 1.4.2 | Hoàn thiện nội dung Báo cáo Word Lab 01 (giải thích module, Default SG, kết quả Test Cases, khó khăn/đề xuất, phân công 4 thành viên) | 29/11 – 30/11 | TV4 | TV2, TV3 | `docs/report/NT548-Lab01-Report.docx` | Đầy đủ ảnh minh chứng, trình bày sạch đẹp | `[ ]` |
+| 1.4.2 | Hoàn thiện nội dung Báo cáo Word Lab 01 (giải thích module, Default SG, kết quả Test Cases, khó khăn/đề xuất, phân công 4 thành viên) | 29/11 – 30/11 | TV4 | TV2, TV3 | `GROUP_6_LAB_REPORT.docx` | Đầy đủ ảnh minh chứng, trình bày sạch đẹp | `[ ]` |
 | 1.4.3 | Cập nhật `README.md` (điền tên/MSSV thật, kiểm tra lại từng lệnh hướng dẫn chạy khớp code thực tế) & gắn tag `v1.0-lab1-ready` | 30/11 | TV4 | TV1 | `README.md` hoàn chỉnh + tag `v1.0-lab1-ready` | Sẵn sàng bàn giao mã nguồn sang `nt548-lab2` | `[ ]` |
 | **1.5** | **Kiểm Toán Cuối Cùng & Nộp Bài** | **09/12 – 10/12** | | | | | |
 | 1.5.1 | Rà soát lần cuối repo GitHub `nt548-lab1` (không lộ secret/state, lịch sử commit đều đặn, README/RUNBOOK khớp code) & kiểm tra ngân sách AWS Learner Lab | 09/12 | TV1 | TV4 | Checklist audit xanh 100% | 0 tài nguyên AWS sót; không file nhạy cảm trong Git | `[ ]` |
@@ -81,5 +81,5 @@ flowchart LR
 | :--- | :---: | :--- |
 | Quên xóa NAT Gateway / EIP dẫn tới cạn ngân sách 50 USD | **Cao** | Bắt buộc chạy `SOP 5` kiểm tra 0 EC2 / 0 NAT GW / 0 EIP sau mỗi buổi test; đặt nhắc lịch trước khi hết phiên 4h |
 | Đổi IP Wi-Fi khiến SSH vào Public EC2 bị timeout | **Trung bình** | Tách `my_ip_cidr` thành biến đầu vào để cập nhật nhanh chỉ trong 30 giây |
-| Thành viên không quen Git gây conflict | **Trung bình** | Phân tách rạch ròi thư mục làm việc (`terraform/` vs `docs/evidence/` vs `docs/report/`) và áp dụng Cheatsheet Git 5 lệnh trong `RUNBOOK.md` |
+| Thành viên không quen Git gây conflict | **Trung bình** | Phân tách rạch ròi thư mục làm việc (`terraform/` vs `docs/evidence/` vs `GROUP_6_LAB_REPORT.docx`) và áp dụng Cheatsheet Git 5 lệnh trong `RUNBOOK.md` |
 | Lỗi `AccessDenied` trên Learner Lab | **Trung bình** | Khóa cứng region `us-east-1`, tuyệt đối không tạo IAM Role/User mới trong code |
