@@ -1,0 +1,135 @@
+==================================================================
+ NT548 Lab 01 — Infrastructure Verification (TC-01 -> TC-06)
+ Time      : 2026-11-24T19:23:46+07:00
+ Region    : us-east-1
+ VPC ID    : vpc-063a91c7d264c8f19
+ Public IP : 98.81.111.40
+ Private IP: 10.0.2.207
+ SSH Key   : /home/helios/.ssh/labsuser.pem
+==================================================================
+
+--- [TC-01] VPC, Subnets, Internet Gateway & Security Groups ---
+-------------------------------------------------------
+|                    DescribeVpcs                     |
++--------------+-------------------------+------------+
+|     CIDR     |           ID            |   State    |
++--------------+-------------------------+------------+
+|  10.0.0.0/16 |  vpc-063a91c7d264c8f19  |  available |
++--------------+-------------------------+------------+
+----------------------------------------------------------------------------------------------------
+|                                          DescribeSubnets                                         |
++------------+--------------+----------------------------+-----------------------------+-----------+
+|     AZ     |    CIDR      |            ID              |            Name             | PublicIP  |
++------------+--------------+----------------------------+-----------------------------+-----------+
+|  us-east-1a|  10.0.1.0/24 |  subnet-05556ed9015bb0cf0  |  nt548-lab1-public-subnet   |  True     |
+|  us-east-1a|  10.0.2.0/24 |  subnet-0df722966ab7e6373  |  nt548-lab1-private-subnet  |  False    |
++------------+--------------+----------------------------+-----------------------------+-----------+
+----------------------------------------
+|       DescribeInternetGateways       |
++------------------------+-------------+
+|           ID           |    State    |
++------------------------+-------------+
+|  igw-0bf2dea7fe6cc3d91 |  available  |
++------------------------+-------------+
+--------------------------------------------------------------------------------------
+|                               DescribeSecurityGroups                               |
++-------------+------------------------+---------------+-----------------------------+
+| EgressCount |          ID            | IngressCount  |            Name             |
++-------------+------------------------+---------------+-----------------------------+
+|  1          |  sg-08489635a6cf62f3f  |  1            |  nt548-lab1-private-ec2-sg  |
+|  1          |  sg-04423f6e0a008ab4c  |  1            |  nt548-lab1-public-ec2-sg   |
+|  0          |  sg-09841fcfd2ce9173c  |  0            |  default                    |
++-------------+------------------------+---------------+-----------------------------+
+[PASS] TC-01: VPC có đủ 2 Subnets và 1 IGW attached
+
+--- [TC-02] Route Tables & NAT Gateway + Elastic IP ---
+[
+    {
+        "RT": "rtb-01268e250af00aa1d",
+        "Name": null,
+        "Routes": [
+            {
+                "Dest": "10.0.0.0/16",
+                "GW": "local",
+                "NAT": null
+            }
+        ]
+    },
+    {
+        "RT": "rtb-0c9f7f0fa23a4ca64",
+        "Name": "nt548-lab1-private-rt",
+        "Routes": [
+            {
+                "Dest": "10.0.0.0/16",
+                "GW": "local",
+                "NAT": null
+            },
+            {
+                "Dest": "0.0.0.0/0",
+                "GW": null,
+                "NAT": "nat-0a7c66876c1ec1303"
+            }
+        ]
+    },
+    {
+        "RT": "rtb-0188b26adda5d7dc4",
+        "Name": "nt548-lab1-public-rt",
+        "Routes": [
+            {
+                "Dest": "10.0.0.0/16",
+                "GW": "local",
+                "NAT": null
+            },
+            {
+                "Dest": "0.0.0.0/0",
+                "GW": "igw-0bf2dea7fe6cc3d91",
+                "NAT": null
+            }
+        ]
+    }
+]
+----------------------------------------
+|          DescribeNatGateways         |
++---------+----------------------------+
+|  EIP    |  184.194.8.183             |
+|  ID     |  nat-0a7c66876c1ec1303     |
+|  State  |  available                 |
+|  Subnet |  subnet-05556ed9015bb0cf0  |
++---------+----------------------------+
+[PASS] TC-02: NAT Gateway ở trạng thái available kèm Elastic IP
+
+--- [TC-03] SSH từ máy cá nhân -> Public EC2 (98.81.111.40) ---
+Public EC2 hostname -I: 10.0.1.96 
+[PASS] TC-03: SSH vào Public EC2 thành công
+
+--- [TC-04] Chặn SSH trực tiếp từ Internet -> Private EC2 (10.0.2.207) ---
+---------------------------------------------------------------------------------
+|                               DescribeInstances                               |
++----------------------+--------------------------+-------------+---------------+
+|          ID          |          Name            |  PrivateIP  |   PublicIP    |
++----------------------+--------------------------+-------------+---------------+
+|  i-073e034619aa930da |  nt548-lab1-public-ec2   |  10.0.1.96  |  98.81.111.40 |
+|  i-0c9664f95230df4fb |  nt548-lab1-private-ec2  |  10.0.2.207 |  None         |
++----------------------+--------------------------+-------------+---------------+
+[PASS] TC-04: SSH trực tiếp vào Private EC2 bị chặn / timeout đúng kỳ vọng
+
+--- [TC-05] SSH ProxyJump (-J) qua Bastion -> Private EC2 (10.0.2.207) ---
+Private EC2 hostname -I: 10.0.2.207 
+[PASS] TC-05: SSH ProxyJump vào Private EC2 thành công (không copy .pem lên Bastion)
+
+--- [TC-06] Private EC2 Outbound Internet qua NAT Gateway (curl + ping) ---
+HTTP/2 301 
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=116 time=2.25 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=116 time=1.61 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=116 time=1.55 ms
+64 bytes from 8.8.8.8: icmp_seq=4 ttl=116 time=1.56 ms
+
+--- 8.8.8.8 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3005ms
+rtt min/avg/max/mdev = 1.551/1.744/2.252/0.293 ms
+[PASS] TC-06: Private EC2 truy cập HTTPS (google.com) và ICMP (8.8.8.8) qua NAT Gateway thành công
+
+==================================================================
+ SUMMARY: PASS = 6 | FAIL = 0
+==================================================================

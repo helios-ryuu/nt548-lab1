@@ -1,0 +1,22 @@
+==================================================================
+ NT548 Lab 01 — AWS Cleanup Check (TC-07 / SOP 5)
+ Time  : 2026-11-24T19:30:48+07:00
+ Region: us-east-1
+==================================================================
+
+=== 1. EC2 Instances chưa terminate ===
+Count: 0
+
+=== 2. NAT Gateways đang hoạt động (NGỐN TIỀN NGẦM!) ===
+Count: 0
+
+=== 3. Elastic IPs chưa giải phóng (TÍNH PHÍ $0.005/h!) ===
+Count: 0
+
+=== 4. CloudFormation Stacks của dự án (nt548-*) đang tồn tại ===
+Count: 0
+
+==================================================================
+ [PASS] TC-07: SẠCH 100% (0 EC2, 0 NAT GW, 0 EIP, 0 Stack).
+ Bạn có thể yên tâm bấm End Lab!
+==================================================================
