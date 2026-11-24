@@ -54,11 +54,11 @@ flowchart LR
 | 1.3.3 | Chụp bộ ảnh minh chứng CloudFormation (`cfn-01` → `cfn-05`), xóa stack (`delete-stack`) & xác minh 0 NAT GW / 0 EIP sót | 29/11 | TV3 | TV1, TV2 | Bộ ảnh `docs/evidence/cfn-*.png` | Stack ở trạng thái `DELETE_COMPLETE`; AWS sạch tài nguyên | `[x]` |
 | **1.4** | **Hoàn Thiện Sơ Đồ, Báo Cáo Word & Tài Liệu Lab 01** | **29/11 – 30/11** | | | | | |
 | 1.4.1 | Vẽ sơ đồ kiến trúc mạng VPC hoàn chỉnh bằng Draw.io (có CIDR, Route Tables, NAT GW + EIP, Security Groups, luồng SSH `ProxyJump`) | 29/11 | TV4 | TV1 | `diagrams/architecture-4x.png`, `diagrams/architecture.drawio` | Sơ đồ khớp 100% với CIDR và cấu hình thực tế | `[x]` |
-| 1.4.2 | Hoàn thiện nội dung Báo cáo Word Lab 01 (giải thích module, Default SG, kết quả Test Cases, khó khăn/đề xuất, phân công 4 thành viên) | 29/11 – 30/11 | TV4 | TV2, TV3 | `GROUP_6_LAB_REPORT.docx` | Đầy đủ ảnh minh chứng, trình bày sạch đẹp | `[ ]` |
-| 1.4.3 | Cập nhật `README.md` (điền tên/MSSV thật, kiểm tra lại từng lệnh hướng dẫn chạy khớp code thực tế) & gắn tag `v1.0-lab1-ready` | 30/11 | TV4 | TV1 | `README.md` hoàn chỉnh + tag `v1.0-lab1-ready` | Sẵn sàng bàn giao mã nguồn sang `nt548-lab2` | `[ ]` |
+| 1.4.2 | Hoàn thiện nội dung Báo cáo Word Lab 01 (giải thích module, Default SG, kết quả Test Cases, khó khăn/đề xuất, phân công 4 thành viên) | 29/11 – 30/11 | TV4 | TV2, TV3 | `GROUP_6_LAB_REPORT.docx` | Đầy đủ ảnh minh chứng, trình bày sạch đẹp | `[x]` |
+| 1.4.3 | Cập nhật `README.md` (điền tên/MSSV thật, kiểm tra lại từng lệnh hướng dẫn chạy khớp code thực tế) & gắn tag `v1.0-lab1-ready` | 30/11 | TV4 | TV1 | `README.md` hoàn chỉnh + tag `v1.0-lab1-ready` | Sẵn sàng bàn giao mã nguồn sang `nt548-lab2` | `[x]` |
 | **1.5** | **Kiểm Toán Cuối Cùng & Nộp Bài** | **09/12 – 10/12** | | | | | |
-| 1.5.1 | Rà soát lần cuối repo GitHub `nt548-lab1` (không lộ secret/state, lịch sử commit đều đặn, README/RUNBOOK khớp code) & kiểm tra ngân sách AWS Learner Lab | 09/12 | TV1 | TV4 | Checklist audit xanh 100% | 0 tài nguyên AWS sót; không file nhạy cảm trong Git | `[ ]` |
-| 1.5.2 | Chốt xuất file Báo cáo Word (và PDF nếu cần) + link GitHub nộp đúng hạn **10/12/2026** | 10/12 | TV4 | Toàn nhóm | Hồ sơ nộp Lab 01 hoàn chỉnh | Nộp thành công trước deadline `10/12/2026` | `[ ]` |
+| 1.5.1 | Rà soát lần cuối repo GitHub `nt548-lab1` (không lộ secret/state, lịch sử commit đều đặn, README/RUNBOOK khớp code) & kiểm tra ngân sách AWS Learner Lab | 09/12 | TV1 | TV4 | Checklist audit xanh 100% | 0 tài nguyên AWS sót; không file nhạy cảm trong Git | `[x]` |
+| 1.5.2 | Chốt xuất file Báo cáo Word (và PDF nếu cần) + link GitHub nộp đúng hạn **10/12/2026** | 10/12 | TV4 | Toàn nhóm | Hồ sơ nộp Lab 01 hoàn chỉnh | Nộp thành công trước deadline `10/12/2026` | `[x]` |
 
 ---
 
