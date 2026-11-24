@@ -1,0 +1,137 @@
+==================================================================
+ NT548 Lab 01 — Infrastructure Verification (TC-01 -> TC-06)
+ Time      : 2026-11-24T19:57:26+07:00
+ Region    : us-east-1
+ VPC ID    : vpc-0b325efe3c2324d2a
+ Public IP : 52.206.113.168
+ Private IP: 10.0.2.191
+ SSH Key   : /home/helios/.ssh/labsuser.pem
+==================================================================
+
+--- [TC-01] VPC, Subnets, Internet Gateway & Security Groups ---
+-------------------------------------------------------
+|                    DescribeVpcs                     |
++--------------+-------------------------+------------+
+|     CIDR     |           ID            |   State    |
++--------------+-------------------------+------------+
+|  10.0.0.0/16 |  vpc-0b325efe3c2324d2a  |  available |
++--------------+-------------------------+------------+
+--------------------------------------------------------------------------------------------------------
+|                                            DescribeSubnets                                           |
++------------+--------------+----------------------------+---------------------------------+-----------+
+|     AZ     |    CIDR      |            ID              |              Name               | PublicIP  |
++------------+--------------+----------------------------+---------------------------------+-----------+
+|  us-east-1a|  10.0.1.0/24 |  subnet-02de2072a1bcc06b7  |  nt548-lab1-cfn-public-subnet   |  True     |
+|  us-east-1a|  10.0.2.0/24 |  subnet-0d281d9f6c59daca1  |  nt548-lab1-cfn-private-subnet  |  False    |
++------------+--------------+----------------------------+---------------------------------+-----------+
+----------------------------------------
+|       DescribeInternetGateways       |
++------------------------+-------------+
+|           ID           |    State    |
++------------------------+-------------+
+|  igw-0eff029fcfea2c2c7 |  available  |
++------------------------+-------------+
+------------------------------------------------------------------------------------------
+|                                 DescribeSecurityGroups                                 |
++-------------+------------------------+---------------+---------------------------------+
+| EgressCount |          ID            | IngressCount  |              Name               |
++-------------+------------------------+---------------+---------------------------------+
+|  1          |  sg-0a5516cb2454ef868  |  1            |  nt548-lab1-cfn-public-ec2-sg   |
+|  1          |  sg-0486c52c8f79b8039  |  1            |  default                        |
+|  1          |  sg-079057982716f3556  |  1            |  nt548-lab1-cfn-private-ec2-sg  |
++-------------+------------------------+---------------+---------------------------------+
+[PASS] TC-01: VPC có đủ 2 Subnets và 1 IGW attached
+
+--- [TC-02] Route Tables & NAT Gateway + Elastic IP ---
+[
+    {
+        "RT": "rtb-0bc48e2fdc83e9ef2",
+        "Name": "nt548-lab1-cfn-public-rt",
+        "Routes": [
+            {
+                "Dest": "10.0.0.0/16",
+                "GW": "local",
+                "NAT": null
+            },
+            {
+                "Dest": "0.0.0.0/0",
+                "GW": "igw-0eff029fcfea2c2c7",
+                "NAT": null
+            }
+        ]
+    },
+    {
+        "RT": "rtb-0d9f0a3c93d19c695",
+        "Name": null,
+        "Routes": [
+            {
+                "Dest": "10.0.0.0/16",
+                "GW": "local",
+                "NAT": null
+            }
+        ]
+    },
+    {
+        "RT": "rtb-063ac24bdf350d5d4",
+        "Name": "nt548-lab1-cfn-private-rt",
+        "Routes": [
+            {
+                "Dest": "10.0.0.0/16",
+                "GW": "local",
+                "NAT": null
+            },
+            {
+                "Dest": "0.0.0.0/0",
+                "GW": null,
+                "NAT": "nat-08f42db4f2701babd"
+            }
+        ]
+    }
+]
+----------------------------------------
+|          DescribeNatGateways         |
++---------+----------------------------+
+|  EIP    |  18.233.127.237            |
+|  ID     |  nat-08f42db4f2701babd     |
+|  State  |  available                 |
+|  Subnet |  subnet-02de2072a1bcc06b7  |
++---------+----------------------------+
+[PASS] TC-02: NAT Gateway ở trạng thái available kèm Elastic IP
+
+--- [TC-03] SSH từ máy cá nhân -> Public EC2 (52.206.113.168) ---
+Public EC2 hostname -I: Warning: Permanently added '52.206.113.168' (ED25519) to the list of known hosts.
+10.0.1.158 
+[PASS] TC-03: SSH vào Public EC2 thành công
+
+--- [TC-04] Chặn SSH trực tiếp từ Internet -> Private EC2 (10.0.2.191) ---
+---------------------------------------------------------------------------------------
+|                                  DescribeInstances                                  |
++----------------------+------------------------------+-------------+-----------------+
+|          ID          |            Name              |  PrivateIP  |    PublicIP     |
++----------------------+------------------------------+-------------+-----------------+
+|  i-0c21e437867be6ff8 |  nt548-lab1-cfn-public-ec2   |  10.0.1.158 |  52.206.113.168 |
+|  i-03da233786ab29ac5 |  nt548-lab1-cfn-private-ec2  |  10.0.2.191 |  None           |
++----------------------+------------------------------+-------------+-----------------+
+[PASS] TC-04: SSH trực tiếp vào Private EC2 bị chặn / timeout đúng kỳ vọng
+
+--- [TC-05] SSH ProxyJump (-J) qua Bastion -> Private EC2 (10.0.2.191) ---
+Private EC2 hostname -I: Warning: Permanently added '10.0.2.191' (ED25519) to the list of known hosts.
+10.0.2.191 
+[PASS] TC-05: SSH ProxyJump vào Private EC2 thành công (không copy .pem lên Bastion)
+
+--- [TC-06] Private EC2 Outbound Internet qua NAT Gateway (curl + ping) ---
+HTTP/2 301 
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=116 time=2.81 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=116 time=1.71 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=112 time=1.78 ms
+64 bytes from 8.8.8.8: icmp_seq=4 ttl=116 time=1.68 ms
+
+--- 8.8.8.8 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3006ms
+rtt min/avg/max/mdev = 1.683/1.995/2.809/0.470 ms
+[PASS] TC-06: Private EC2 truy cập HTTPS (google.com) và ICMP (8.8.8.8) qua NAT Gateway thành công
+
+==================================================================
+ SUMMARY: PASS = 6 | FAIL = 0
+==================================================================

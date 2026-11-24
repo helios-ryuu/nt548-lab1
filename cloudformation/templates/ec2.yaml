@@ -1,0 +1,133 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "NT548 Lab 01 - Nested Stack: Public EC2 (Bastion) & Private EC2 voi IMDSv2 va EBS ma hoa"
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: nt548-lab1
+    Description: Prefix ten cho cac EC2 Instances
+
+  PublicSubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: ID cua Public Subnet
+
+  PrivateSubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: ID cua Private Subnet
+
+  PublicSecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: ID cua Public EC2 Security Group
+
+  PrivateSecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: ID cua Private EC2 Security Group
+
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: vockey
+    Description: Ten EC2 Key Pair co san (mac dinh vockey trong Learner Lab)
+
+  InstanceType:
+    Type: String
+    Default: t3.micro
+    Description: Loai EC2 Instance
+
+  AmiId:
+    Type: AWS::EC2::Image::Id
+    Description: ID cua Amazon Linux 2023 AMI
+
+Resources:
+  # Launch Template dung chung de ep IMDSv2 va ma hoa EBS gp3 8GB
+  Ec2HardeningLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Sub "${ProjectName}-cfn-ec2-hardening-lt"
+      LaunchTemplateData:
+        MetadataOptions:
+          HttpEndpoint: enabled
+          HttpTokens: required
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
+              Encrypted: true
+              VolumeType: gp3
+              VolumeSize: 8
+              DeleteOnTermination: true
+
+  # 1. Public EC2 (Bastion Host) - co Public IP
+  PublicEc2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref Ec2HardeningLaunchTemplate
+        Version: !GetAtt Ec2HardeningLaunchTemplate.LatestVersionNumber
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      NetworkInterfaces:
+        - DeviceIndex: "0"
+          AssociatePublicIpAddress: true
+          SubnetId: !Ref PublicSubnetId
+          GroupSet:
+            - !Ref PublicSecurityGroupId
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-cfn-public-ec2"
+        - Key: Tier
+          Value: Public
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: ManagedBy
+          Value: CloudFormation
+        - Key: Course
+          Value: NT548
+
+  # 2. Private EC2 (Internal Server) - KHONG co Public IP
+  PrivateEc2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref Ec2HardeningLaunchTemplate
+        Version: !GetAtt Ec2HardeningLaunchTemplate.LatestVersionNumber
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      NetworkInterfaces:
+        - DeviceIndex: "0"
+          AssociatePublicIpAddress: false
+          SubnetId: !Ref PrivateSubnetId
+          GroupSet:
+            - !Ref PrivateSecurityGroupId
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-cfn-private-ec2"
+        - Key: Tier
+          Value: Private
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: ManagedBy
+          Value: CloudFormation
+        - Key: Course
+          Value: NT548
+
+Outputs:
+  PublicEc2Id:
+    Description: Instance ID cua Public EC2 (Bastion)
+    Value: !Ref PublicEc2Instance
+
+  PublicEc2PublicIp:
+    Description: Public IP cua Public EC2 (Bastion)
+    Value: !GetAtt PublicEc2Instance.PublicIp
+
+  PublicEc2PrivateIp:
+    Description: Private IP cua Public EC2 (Bastion)
+    Value: !GetAtt PublicEc2Instance.PrivateIp
+
+  PrivateEc2Id:
+    Description: Instance ID cua Private EC2
+    Value: !Ref PrivateEc2Instance
+
+  PrivateEc2PrivateIp:
+    Description: Private IP cua Private EC2
+    Value: !GetAtt PrivateEc2Instance.PrivateIp

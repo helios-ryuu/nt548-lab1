@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "NT548 Lab 01 - Nested Stack: Security Groups cho Public EC2 (Bastion) & Private EC2"
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: nt548-lab1
+    Description: Prefix ten cho Security Groups
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: ID cua VPC
+
+  MyIpCidr:
+    Type: String
+    Description: Public IP may ca nhan dang CIDR (<MY_IP>/32) duoc phep SSH vao Public EC2
+
+Resources:
+  # 1. Public EC2 SG: chi cho phep SSH (TCP 22) tu dung IP may ca nhan (/32)
+  PublicEc2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${ProjectName}-cfn-public-ec2-sg"
+      GroupDescription: Allow SSH inbound only from personal IP (/32)
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - Description: SSH from personal IP (/32)
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref MyIpCidr
+      SecurityGroupEgress:
+        - Description: Allow all outbound traffic
+          IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-cfn-public-ec2-sg"
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: ManagedBy
+          Value: CloudFormation
+        - Key: Course
+          Value: NT548
+
+  # 2. Private EC2 SG: chi cho phep SSH (TCP 22) tu Public EC2 SG (SG chaining)
+  PrivateEc2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${ProjectName}-cfn-private-ec2-sg"
+      GroupDescription: Allow SSH inbound only from Public EC2 Security Group
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - Description: SSH from Public EC2 Security Group
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref PublicEc2SecurityGroup
+      SecurityGroupEgress:
+        - Description: Allow all outbound traffic via NAT Gateway (HTTP/HTTPS/DNS/ICMP)
+          IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-cfn-private-ec2-sg"
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: ManagedBy
+          Value: CloudFormation
+        - Key: Course
+          Value: NT548
+
+Outputs:
+  PublicSecurityGroupId:
+    Description: ID cua Public EC2 Security Group
+    Value: !Ref PublicEc2SecurityGroup
+
+  PrivateSecurityGroupId:
+    Description: ID cua Private EC2 Security Group
+    Value: !Ref PrivateEc2SecurityGroup

@@ -1,0 +1,185 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "NT548 Lab 01 - Root Stack: Dieu phoi Nested Stacks (VPC -> Security Groups -> EC2)"
+
+Parameters:
+  TemplateBucketName:
+    Type: String
+    Description: Ten S3 Bucket chua cac nested templates
+
+  TemplatePrefix:
+    Type: String
+    Default: templates
+    Description: Thu muc prefix chua cac nested templates tren S3
+
+  ProjectName:
+    Type: String
+    Default: nt548-lab1
+    Description: Prefix ten cho toan bo tai nguyen
+
+  AvailabilityZone:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Default: us-east-1a
+    Description: Availability Zone trien khai
+
+  VpcCidr:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: Dai CIDR cho VPC
+
+  PublicSubnetCidr:
+    Type: String
+    Default: 10.0.1.0/24
+    Description: Dai CIDR cho Public Subnet
+
+  PrivateSubnetCidr:
+    Type: String
+    Default: 10.0.2.0/24
+    Description: Dai CIDR cho Private Subnet
+
+  MyIpCidr:
+    Type: String
+    Description: Public IP may ca nhan dang CIDR (<MY_IP>/32) duoc phep SSH vao Public EC2
+
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: vockey
+    Description: Ten EC2 Key Pair co san (mac dinh vockey trong Learner Lab)
+
+  InstanceType:
+    Type: String
+    Default: t3.micro
+    Description: Loai EC2 Instance cho Public va Private EC2
+
+  LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+    Description: SSM Parameter tu dong lay AMI Amazon Linux 2023 moi nhat
+
+Resources:
+  # 1. Nested Stack: VPC, Subnets, IGW, NAT Gateway + EIP & Route Tables
+  VpcStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub "https://${TemplateBucketName}.s3.${AWS::Region}.amazonaws.com/${TemplatePrefix}/vpc.yaml"
+      Parameters:
+        ProjectName: !Ref ProjectName
+        VpcCidr: !Ref VpcCidr
+        PublicSubnetCidr: !Ref PublicSubnetCidr
+        PrivateSubnetCidr: !Ref PrivateSubnetCidr
+        AvailabilityZone: !Ref AvailabilityZone
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: ManagedBy
+          Value: CloudFormation
+        - Key: Course
+          Value: NT548
+
+  # 2. Nested Stack: Public EC2 SG & Private EC2 SG
+  SecurityGroupStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub "https://${TemplateBucketName}.s3.${AWS::Region}.amazonaws.com/${TemplatePrefix}/security-groups.yaml"
+      Parameters:
+        ProjectName: !Ref ProjectName
+        VpcId: !GetAtt VpcStack.Outputs.VpcId
+        MyIpCidr: !Ref MyIpCidr
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: ManagedBy
+          Value: CloudFormation
+        - Key: Course
+          Value: NT548
+
+  # 3. Nested Stack: Public EC2 (Bastion) & Private EC2
+  Ec2Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub "https://${TemplateBucketName}.s3.${AWS::Region}.amazonaws.com/${TemplatePrefix}/ec2.yaml"
+      Parameters:
+        ProjectName: !Ref ProjectName
+        PublicSubnetId: !GetAtt VpcStack.Outputs.PublicSubnetId
+        PrivateSubnetId: !GetAtt VpcStack.Outputs.PrivateSubnetId
+        PublicSecurityGroupId: !GetAtt SecurityGroupStack.Outputs.PublicSecurityGroupId
+        PrivateSecurityGroupId: !GetAtt SecurityGroupStack.Outputs.PrivateSecurityGroupId
+        KeyName: !Ref KeyName
+        InstanceType: !Ref InstanceType
+        AmiId: !Ref LatestAmiId
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: ManagedBy
+          Value: CloudFormation
+        - Key: Course
+          Value: NT548
+
+Outputs:
+  VpcId:
+    Description: ID cua VPC
+    Value: !GetAtt VpcStack.Outputs.VpcId
+
+  DefaultSecurityGroupId:
+    Description: ID cua Default Security Group mac dinh cua VPC
+    Value: !GetAtt VpcStack.Outputs.DefaultSecurityGroupId
+
+  PublicSubnetId:
+    Description: ID cua Public Subnet
+    Value: !GetAtt VpcStack.Outputs.PublicSubnetId
+
+  PrivateSubnetId:
+    Description: ID cua Private Subnet
+    Value: !GetAtt VpcStack.Outputs.PrivateSubnetId
+
+  InternetGatewayId:
+    Description: ID cua Internet Gateway
+    Value: !GetAtt VpcStack.Outputs.InternetGatewayId
+
+  NatGatewayId:
+    Description: ID cua NAT Gateway
+    Value: !GetAtt VpcStack.Outputs.NatGatewayId
+
+  NatEip:
+    Description: Elastic IP cua NAT Gateway
+    Value: !GetAtt VpcStack.Outputs.NatEip
+
+  PublicSecurityGroupId:
+    Description: ID cua Public EC2 Security Group
+    Value: !GetAtt SecurityGroupStack.Outputs.PublicSecurityGroupId
+
+  PrivateSecurityGroupId:
+    Description: ID cua Private EC2 Security Group
+    Value: !GetAtt SecurityGroupStack.Outputs.PrivateSecurityGroupId
+
+  PublicEc2Id:
+    Description: Instance ID cua Public EC2 (Bastion)
+    Value: !GetAtt Ec2Stack.Outputs.PublicEc2Id
+
+  PublicEc2PublicIp:
+    Description: Public IP cua Public EC2 (Bastion)
+    Value: !GetAtt Ec2Stack.Outputs.PublicEc2PublicIp
+
+  PublicEc2PrivateIp:
+    Description: Private IP cua Public EC2 (Bastion)
+    Value: !GetAtt Ec2Stack.Outputs.PublicEc2PrivateIp
+
+  PrivateEc2Id:
+    Description: Instance ID cua Private EC2
+    Value: !GetAtt Ec2Stack.Outputs.PrivateEc2Id
+
+  PrivateEc2PrivateIp:
+    Description: Private IP cua Private EC2
+    Value: !GetAtt Ec2Stack.Outputs.PrivateEc2PrivateIp
+
+  SshPublicCommand:
+    Description: Lenh SSH vao Public EC2
+    Value: !Sub
+      - "ssh -i ~/.ssh/labsuser.pem ec2-user@${PublicIp}"
+      - PublicIp: !GetAtt Ec2Stack.Outputs.PublicEc2PublicIp
+
+  SshPrivateProxyJumpCommand:
+    Description: Lenh SSH ProxyJump vao Private EC2
+    Value: !Sub
+      - "ssh -i ~/.ssh/labsuser.pem -J ec2-user@${PublicIp} ec2-user@${PrivateIp}"
+      - PublicIp: !GetAtt Ec2Stack.Outputs.PublicEc2PublicIp
+        PrivateIp: !GetAtt Ec2Stack.Outputs.PrivateEc2PrivateIp

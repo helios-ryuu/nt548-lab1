@@ -121,6 +121,9 @@ aws s3 mb "s3://${CFN_BUCKET}" --region "${AWS_REGION}" || true
 source .venv/bin/activate
 cfn-lint cloudformation/main.yaml cloudformation/templates/*.yaml
 
+# Validate template chính (main.yaml) trước khi deploy
+aws cloudformation validate-template --template-body file://cloudformation/main.yaml
+
 # Upload các nested template lên S3
 aws s3 sync cloudformation/templates/ "s3://${CFN_BUCKET}/templates/" --delete
 ```
