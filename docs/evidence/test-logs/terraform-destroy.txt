@@ -1,0 +1,644 @@
+$ terraform destroy -auto-approve
+module.ec2.data.aws_ami.amazon_linux_2023: Reading...
+module.vpc.aws_eip.nat: Refreshing state... [id=eipalloc-02ebf8e33c35156e8]
+module.vpc.aws_vpc.this: Refreshing state... [id=vpc-063a91c7d264c8f19]
+module.ec2.data.aws_ami.amazon_linux_2023: Read complete after 2s [id=ami-062caee4b7b602eb0]
+module.vpc.aws_internet_gateway.this: Refreshing state... [id=igw-0bf2dea7fe6cc3d91]
+module.vpc.aws_subnet.public: Refreshing state... [id=subnet-05556ed9015bb0cf0]
+module.vpc.aws_default_security_group.default: Refreshing state... [id=sg-09841fcfd2ce9173c]
+module.vpc.aws_subnet.private: Refreshing state... [id=subnet-0df722966ab7e6373]
+module.security_group.aws_security_group.public_ec2: Refreshing state... [id=sg-04423f6e0a008ab4c]
+module.vpc.aws_route_table.public: Refreshing state... [id=rtb-0188b26adda5d7dc4]
+module.vpc.aws_nat_gateway.this: Refreshing state... [id=nat-0a7c66876c1ec1303]
+module.security_group.aws_security_group.private_ec2: Refreshing state... [id=sg-08489635a6cf62f3f]
+module.ec2.aws_instance.public: Refreshing state... [id=i-073e034619aa930da]
+module.vpc.aws_route_table_association.public: Refreshing state... [id=rtbassoc-0a50464b349b7b1c8]
+module.vpc.aws_route_table.private: Refreshing state... [id=rtb-0c9f7f0fa23a4ca64]
+module.ec2.aws_instance.private: Refreshing state... [id=i-0c9664f95230df4fb]
+module.vpc.aws_route_table_association.private: Refreshing state... [id=rtbassoc-0f89b98f943ac01f6]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # module.ec2.aws_instance.private will be destroyed
+  - resource "aws_instance" "private" {
+      - ami                                  = "ami-062caee4b7b602eb0" -> null
+      - arn                                  = "arn:aws:ec2:us-east-1:883920785893:instance/i-0c9664f95230df4fb" -> null
+      - associate_public_ip_address          = false -> null
+      - availability_zone                    = "us-east-1a" -> null
+      - cpu_core_count                       = 1 -> null
+      - cpu_threads_per_core                 = 2 -> null
+      - disable_api_stop                     = false -> null
+      - disable_api_termination              = false -> null
+      - ebs_optimized                        = false -> null
+      - get_password_data                    = false -> null
+      - hibernation                          = false -> null
+      - id                                   = "i-0c9664f95230df4fb" -> null
+      - instance_initiated_shutdown_behavior = "stop" -> null
+      - instance_state                       = "running" -> null
+      - instance_type                        = "t3.micro" -> null
+      - ipv6_address_count                   = 0 -> null
+      - ipv6_addresses                       = [] -> null
+      - key_name                             = "vockey" -> null
+      - monitoring                           = false -> null
+      - placement_partition_number           = 0 -> null
+      - primary_network_interface_id         = "eni-022dd2d69afb0dc1f" -> null
+      - private_dns                          = "ip-10-0-2-207.ec2.internal" -> null
+      - private_ip                           = "10.0.2.207" -> null
+      - secondary_private_ips                = [] -> null
+      - security_groups                      = [] -> null
+      - source_dest_check                    = true -> null
+      - subnet_id                            = "subnet-0df722966ab7e6373" -> null
+      - tags                                 = {
+          - "Name" = "nt548-lab1-private-ec2"
+          - "Tier" = "Private"
+        } -> null
+      - tags_all                             = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-private-ec2"
+          - "Project"   = "nt548-lab1"
+          - "Tier"      = "Private"
+        } -> null
+      - tenancy                              = "default" -> null
+      - user_data_replace_on_change          = false -> null
+      - vpc_security_group_ids               = [
+          - "sg-08489635a6cf62f3f",
+        ] -> null
+        # (9 unchanged attributes hidden)
+
+      - capacity_reservation_specification {
+          - capacity_reservation_preference = "open" -> null
+        }
+
+      - cpu_options {
+          - core_count       = 1 -> null
+          - threads_per_core = 2 -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - credit_specification {
+          - cpu_credits = "unlimited" -> null
+        }
+
+      - enclave_options {
+          - enabled = false -> null
+        }
+
+      - maintenance_options {
+          - auto_recovery = "default" -> null
+        }
+
+      - metadata_options {
+          - http_endpoint               = "enabled" -> null
+          - http_protocol_ipv6          = "disabled" -> null
+          - http_put_response_hop_limit = 2 -> null
+          - http_tokens                 = "required" -> null
+          - instance_metadata_tags      = "disabled" -> null
+        }
+
+      - private_dns_name_options {
+          - enable_resource_name_dns_a_record    = false -> null
+          - enable_resource_name_dns_aaaa_record = false -> null
+          - hostname_type                        = "ip-name" -> null
+        }
+
+      - root_block_device {
+          - delete_on_termination = true -> null
+          - device_name           = "/dev/xvda" -> null
+          - encrypted             = true -> null
+          - iops                  = 3000 -> null
+          - kms_key_id            = "arn:aws:kms:us-east-1:883920785893:key/67c7e4c7-2b30-4216-8816-d7eab3b53c08" -> null
+          - tags                  = {} -> null
+          - tags_all              = {
+              - "Course"    = "NT548"
+              - "ManagedBy" = "Terraform"
+              - "Project"   = "nt548-lab1"
+            } -> null
+          - throughput            = 125 -> null
+          - volume_id             = "vol-06dac898894c7cf47" -> null
+          - volume_size           = 8 -> null
+          - volume_type           = "gp3" -> null
+        }
+    }
+
+  # module.ec2.aws_instance.public will be destroyed
+  - resource "aws_instance" "public" {
+      - ami                                  = "ami-062caee4b7b602eb0" -> null
+      - arn                                  = "arn:aws:ec2:us-east-1:883920785893:instance/i-073e034619aa930da" -> null
+      - associate_public_ip_address          = true -> null
+      - availability_zone                    = "us-east-1a" -> null
+      - cpu_core_count                       = 1 -> null
+      - cpu_threads_per_core                 = 2 -> null
+      - disable_api_stop                     = false -> null
+      - disable_api_termination              = false -> null
+      - ebs_optimized                        = false -> null
+      - get_password_data                    = false -> null
+      - hibernation                          = false -> null
+      - id                                   = "i-073e034619aa930da" -> null
+      - instance_initiated_shutdown_behavior = "stop" -> null
+      - instance_state                       = "running" -> null
+      - instance_type                        = "t3.micro" -> null
+      - ipv6_address_count                   = 0 -> null
+      - ipv6_addresses                       = [] -> null
+      - key_name                             = "vockey" -> null
+      - monitoring                           = false -> null
+      - placement_partition_number           = 0 -> null
+      - primary_network_interface_id         = "eni-0aaca03b4e7a11f76" -> null
+      - private_dns                          = "ip-10-0-1-96.ec2.internal" -> null
+      - private_ip                           = "10.0.1.96" -> null
+      - public_dns                           = "ec2-98-81-111-40.compute-1.amazonaws.com" -> null
+      - public_ip                            = "98.81.111.40" -> null
+      - secondary_private_ips                = [] -> null
+      - security_groups                      = [] -> null
+      - source_dest_check                    = true -> null
+      - subnet_id                            = "subnet-05556ed9015bb0cf0" -> null
+      - tags                                 = {
+          - "Name" = "nt548-lab1-public-ec2"
+          - "Tier" = "Public"
+        } -> null
+      - tags_all                             = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-public-ec2"
+          - "Project"   = "nt548-lab1"
+          - "Tier"      = "Public"
+        } -> null
+      - tenancy                              = "default" -> null
+      - user_data_replace_on_change          = false -> null
+      - vpc_security_group_ids               = [
+          - "sg-04423f6e0a008ab4c",
+        ] -> null
+        # (7 unchanged attributes hidden)
+
+      - capacity_reservation_specification {
+          - capacity_reservation_preference = "open" -> null
+        }
+
+      - cpu_options {
+          - core_count       = 1 -> null
+          - threads_per_core = 2 -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - credit_specification {
+          - cpu_credits = "unlimited" -> null
+        }
+
+      - enclave_options {
+          - enabled = false -> null
+        }
+
+      - maintenance_options {
+          - auto_recovery = "default" -> null
+        }
+
+      - metadata_options {
+          - http_endpoint               = "enabled" -> null
+          - http_protocol_ipv6          = "disabled" -> null
+          - http_put_response_hop_limit = 2 -> null
+          - http_tokens                 = "required" -> null
+          - instance_metadata_tags      = "disabled" -> null
+        }
+
+      - private_dns_name_options {
+          - enable_resource_name_dns_a_record    = false -> null
+          - enable_resource_name_dns_aaaa_record = false -> null
+          - hostname_type                        = "ip-name" -> null
+        }
+
+      - root_block_device {
+          - delete_on_termination = true -> null
+          - device_name           = "/dev/xvda" -> null
+          - encrypted             = true -> null
+          - iops                  = 3000 -> null
+          - kms_key_id            = "arn:aws:kms:us-east-1:883920785893:key/67c7e4c7-2b30-4216-8816-d7eab3b53c08" -> null
+          - tags                  = {} -> null
+          - tags_all              = {
+              - "Course"    = "NT548"
+              - "ManagedBy" = "Terraform"
+              - "Project"   = "nt548-lab1"
+            } -> null
+          - throughput            = 125 -> null
+          - volume_id             = "vol-016c93a067f6a0fc3" -> null
+          - volume_size           = 8 -> null
+          - volume_type           = "gp3" -> null
+        }
+    }
+
+  # module.security_group.aws_security_group.private_ec2 will be destroyed
+  - resource "aws_security_group" "private_ec2" {
+      - arn                    = "arn:aws:ec2:us-east-1:883920785893:security-group/sg-08489635a6cf62f3f" -> null
+      - description            = "Allow SSH inbound only from Public EC2 Security Group" -> null
+      - egress                 = [
+          + {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - description      = "Allow all outbound traffic via NAT Gateway (HTTP/HTTPS/DNS/ICMP)"
+              - from_port        = 0
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "-1"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 0
+            },
+        ] -> null
+      - id                     = "sg-08489635a6cf62f3f" -> null
+      - ingress                = [
+          - {
+              - cidr_blocks      = []
+              - description      = "SSH from Public EC2 Security Group"
+              - from_port        = 22
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = [
+                  - "sg-04423f6e0a008ab4c",
+                ]
+              - self             = false
+              - to_port          = 22
+            },
+        ] -> null
+      - name                   = "nt548-lab1-private-ec2-sg" -> null
+      - owner_id               = "883920785893" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "nt548-lab1-private-ec2-sg"
+        } -> null
+      - tags_all               = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-private-ec2-sg"
+          - "Project"   = "nt548-lab1"
+        } -> null
+      - vpc_id                 = "vpc-063a91c7d264c8f19" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.security_group.aws_security_group.public_ec2 will be destroyed
+  - resource "aws_security_group" "public_ec2" {
+      - arn                    = "arn:aws:ec2:us-east-1:883920785893:security-group/sg-04423f6e0a008ab4c" -> null
+      - description            = "Allow SSH inbound only from personal IP (/32)" -> null
+      - egress                 = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - description      = "Allow all outbound traffic"
+              - from_port        = 0
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "-1"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 0
+            },
+        ] -> null
+      - id                     = "sg-04423f6e0a008ab4c" -> null
+      - ingress                = [
+          - {
+              - cidr_blocks      = [
+                  - "14.169.181.181/32",
+                ]
+              - description      = "SSH from personal IP"
+              - from_port        = 22
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 22
+            },
+        ] -> null
+      - name                   = "nt548-lab1-public-ec2-sg" -> null
+      - owner_id               = "883920785893" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "nt548-lab1-public-ec2-sg"
+        } -> null
+      - tags_all               = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-public-ec2-sg"
+          - "Project"   = "nt548-lab1"
+        } -> null
+      - vpc_id                 = "vpc-063a91c7d264c8f19" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_default_security_group.default will be destroyed
+  - resource "aws_default_security_group" "default" {
+      - arn                    = "arn:aws:ec2:us-east-1:883920785893:security-group/sg-09841fcfd2ce9173c" -> null
+      - description            = "default VPC security group" -> null
+      - egress                 = [] -> null
+      - id                     = "sg-09841fcfd2ce9173c" -> null
+      - ingress                = [] -> null
+      - name                   = "default" -> null
+      - owner_id               = "883920785893" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "nt548-lab1-default-sg-restricted"
+        } -> null
+      - tags_all               = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-default-sg-restricted"
+          - "Project"   = "nt548-lab1"
+        } -> null
+      - vpc_id                 = "vpc-063a91c7d264c8f19" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_eip.nat will be destroyed
+  - resource "aws_eip" "nat" {
+      - allocation_id            = "eipalloc-02ebf8e33c35156e8" -> null
+      - arn                      = "arn:aws:ec2:us-east-1:883920785893:elastic-ip/eipalloc-02ebf8e33c35156e8" -> null
+      - association_id           = "eipassoc-0eb692335d16cbdc6" -> null
+      - domain                   = "vpc" -> null
+      - id                       = "eipalloc-02ebf8e33c35156e8" -> null
+      - network_border_group     = "us-east-1" -> null
+      - network_interface        = "eni-054fad6e07270e136" -> null
+      - private_dns              = "ip-10-0-1-189.ec2.internal" -> null
+      - private_ip               = "10.0.1.189" -> null
+      - public_dns               = "ec2-184-194-8-183.compute-1.amazonaws.com" -> null
+      - public_ip                = "184.194.8.183" -> null
+      - public_ipv4_pool         = "amazon" -> null
+      - tags                     = {
+          - "Name" = "nt548-lab1-nat-eip"
+        } -> null
+      - tags_all                 = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-nat-eip"
+          - "Project"   = "nt548-lab1"
+        } -> null
+      - vpc                      = true -> null
+        # (5 unchanged attributes hidden)
+    }
+
+  # module.vpc.aws_internet_gateway.this will be destroyed
+  - resource "aws_internet_gateway" "this" {
+      - arn      = "arn:aws:ec2:us-east-1:883920785893:internet-gateway/igw-0bf2dea7fe6cc3d91" -> null
+      - id       = "igw-0bf2dea7fe6cc3d91" -> null
+      - owner_id = "883920785893" -> null
+      - tags     = {
+          - "Name" = "nt548-lab1-igw"
+        } -> null
+      - tags_all = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-igw"
+          - "Project"   = "nt548-lab1"
+        } -> null
+      - vpc_id   = "vpc-063a91c7d264c8f19" -> null
+    }
+
+  # module.vpc.aws_nat_gateway.this will be destroyed
+  - resource "aws_nat_gateway" "this" {
+      - allocation_id                      = "eipalloc-02ebf8e33c35156e8" -> null
+      - association_id                     = "eipassoc-0eb692335d16cbdc6" -> null
+      - connectivity_type                  = "public" -> null
+      - id                                 = "nat-0a7c66876c1ec1303" -> null
+      - network_interface_id               = "eni-054fad6e07270e136" -> null
+      - private_ip                         = "10.0.1.189" -> null
+      - public_ip                          = "184.194.8.183" -> null
+      - secondary_allocation_ids           = [] -> null
+      - secondary_private_ip_address_count = 0 -> null
+      - secondary_private_ip_addresses     = [] -> null
+      - subnet_id                          = "subnet-05556ed9015bb0cf0" -> null
+      - tags                               = {
+          - "Name" = "nt548-lab1-nat-gw"
+        } -> null
+      - tags_all                           = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-nat-gw"
+          - "Project"   = "nt548-lab1"
+        } -> null
+    }
+
+  # module.vpc.aws_route_table.private will be destroyed
+  - resource "aws_route_table" "private" {
+      - arn              = "arn:aws:ec2:us-east-1:883920785893:route-table/rtb-0c9f7f0fa23a4ca64" -> null
+      - id               = "rtb-0c9f7f0fa23a4ca64" -> null
+      - owner_id         = "883920785893" -> null
+      - propagating_vgws = [] -> null
+      - route            = [
+          - {
+              - cidr_block                 = "0.0.0.0/0"
+              - nat_gateway_id             = "nat-0a7c66876c1ec1303"
+                # (11 unchanged attributes hidden)
+            },
+        ] -> null
+      - tags             = {
+          - "Name" = "nt548-lab1-private-rt"
+        } -> null
+      - tags_all         = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-private-rt"
+          - "Project"   = "nt548-lab1"
+        } -> null
+      - vpc_id           = "vpc-063a91c7d264c8f19" -> null
+    }
+
+  # module.vpc.aws_route_table.public will be destroyed
+  - resource "aws_route_table" "public" {
+      - arn              = "arn:aws:ec2:us-east-1:883920785893:route-table/rtb-0188b26adda5d7dc4" -> null
+      - id               = "rtb-0188b26adda5d7dc4" -> null
+      - owner_id         = "883920785893" -> null
+      - propagating_vgws = [] -> null
+      - route            = [
+          - {
+              - cidr_block                 = "0.0.0.0/0"
+              - gateway_id                 = "igw-0bf2dea7fe6cc3d91"
+                # (11 unchanged attributes hidden)
+            },
+        ] -> null
+      - tags             = {
+          - "Name" = "nt548-lab1-public-rt"
+        } -> null
+      - tags_all         = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-public-rt"
+          - "Project"   = "nt548-lab1"
+        } -> null
+      - vpc_id           = "vpc-063a91c7d264c8f19" -> null
+    }
+
+  # module.vpc.aws_route_table_association.private will be destroyed
+  - resource "aws_route_table_association" "private" {
+      - id             = "rtbassoc-0f89b98f943ac01f6" -> null
+      - route_table_id = "rtb-0c9f7f0fa23a4ca64" -> null
+      - subnet_id      = "subnet-0df722966ab7e6373" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_route_table_association.public will be destroyed
+  - resource "aws_route_table_association" "public" {
+      - id             = "rtbassoc-0a50464b349b7b1c8" -> null
+      - route_table_id = "rtb-0188b26adda5d7dc4" -> null
+      - subnet_id      = "subnet-05556ed9015bb0cf0" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_subnet.private will be destroyed
+  - resource "aws_subnet" "private" {
+      - arn                                            = "arn:aws:ec2:us-east-1:883920785893:subnet/subnet-0df722966ab7e6373" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "us-east-1a" -> null
+      - availability_zone_id                           = "use1-az6" -> null
+      - cidr_block                                     = "10.0.2.0/24" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-0df722966ab7e6373" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = false -> null
+      - owner_id                                       = "883920785893" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - tags                                           = {
+          - "Name" = "nt548-lab1-private-subnet"
+          - "Tier" = "Private"
+        } -> null
+      - tags_all                                       = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-private-subnet"
+          - "Project"   = "nt548-lab1"
+          - "Tier"      = "Private"
+        } -> null
+      - vpc_id                                         = "vpc-063a91c7d264c8f19" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.vpc.aws_subnet.public will be destroyed
+  - resource "aws_subnet" "public" {
+      - arn                                            = "arn:aws:ec2:us-east-1:883920785893:subnet/subnet-05556ed9015bb0cf0" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "us-east-1a" -> null
+      - availability_zone_id                           = "use1-az6" -> null
+      - cidr_block                                     = "10.0.1.0/24" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-05556ed9015bb0cf0" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = true -> null
+      - owner_id                                       = "883920785893" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - tags                                           = {
+          - "Name" = "nt548-lab1-public-subnet"
+          - "Tier" = "Public"
+        } -> null
+      - tags_all                                       = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-public-subnet"
+          - "Project"   = "nt548-lab1"
+          - "Tier"      = "Public"
+        } -> null
+      - vpc_id                                         = "vpc-063a91c7d264c8f19" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.vpc.aws_vpc.this will be destroyed
+  - resource "aws_vpc" "this" {
+      - arn                                  = "arn:aws:ec2:us-east-1:883920785893:vpc/vpc-063a91c7d264c8f19" -> null
+      - assign_generated_ipv6_cidr_block     = false -> null
+      - cidr_block                           = "10.0.0.0/16" -> null
+      - default_network_acl_id               = "acl-0f79284e5fb8215e5" -> null
+      - default_route_table_id               = "rtb-01268e250af00aa1d" -> null
+      - default_security_group_id            = "sg-09841fcfd2ce9173c" -> null
+      - dhcp_options_id                      = "dopt-0253f5a134aa58d27" -> null
+      - enable_dns_hostnames                 = true -> null
+      - enable_dns_support                   = true -> null
+      - enable_network_address_usage_metrics = false -> null
+      - id                                   = "vpc-063a91c7d264c8f19" -> null
+      - instance_tenancy                     = "default" -> null
+      - ipv6_netmask_length                  = 0 -> null
+      - main_route_table_id                  = "rtb-01268e250af00aa1d" -> null
+      - owner_id                             = "883920785893" -> null
+      - tags                                 = {
+          - "Name" = "nt548-lab1-vpc"
+        } -> null
+      - tags_all                             = {
+          - "Course"    = "NT548"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "nt548-lab1-vpc"
+          - "Project"   = "nt548-lab1"
+        } -> null
+        # (4 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 0 to change, 15 to destroy.
+
+Changes to Outputs:
+  - default_security_group_id     = "sg-09841fcfd2ce9173c" -> null
+  - igw_id                        = "igw-0bf2dea7fe6cc3d91" -> null
+  - nat_eip                       = "184.194.8.183" -> null
+  - nat_gateway_id                = "nat-0a7c66876c1ec1303" -> null
+  - private_ec2_id                = "i-0c9664f95230df4fb" -> null
+  - private_ec2_private_ip        = "10.0.2.207" -> null
+  - private_sg_id                 = "sg-08489635a6cf62f3f" -> null
+  - private_subnet_id             = "subnet-0df722966ab7e6373" -> null
+  - public_ec2_id                 = "i-073e034619aa930da" -> null
+  - public_ec2_private_ip         = "10.0.1.96" -> null
+  - public_ec2_public_ip          = "98.81.111.40" -> null
+  - public_sg_id                  = "sg-04423f6e0a008ab4c" -> null
+  - public_subnet_id              = "subnet-05556ed9015bb0cf0" -> null
+  - ssh_private_proxyjump_command = "ssh -i ~/.ssh/labsuser.pem -J ec2-user@98.81.111.40 ec2-user@10.0.2.207" -> null
+  - ssh_public_command            = "ssh -i ~/.ssh/labsuser.pem ec2-user@98.81.111.40" -> null
+  - vpc_id                        = "vpc-063a91c7d264c8f19" -> null
+module.vpc.aws_route_table_association.private: Destroying... [id=rtbassoc-0f89b98f943ac01f6]
+module.vpc.aws_route_table_association.public: Destroying... [id=rtbassoc-0a50464b349b7b1c8]
+module.vpc.aws_default_security_group.default: Destroying... [id=sg-09841fcfd2ce9173c]
+module.vpc.aws_default_security_group.default: Destruction complete after 0s
+module.ec2.aws_instance.public: Destroying... [id=i-073e034619aa930da]
+module.ec2.aws_instance.private: Destroying... [id=i-0c9664f95230df4fb]
+module.vpc.aws_route_table_association.public: Destruction complete after 1s
+module.vpc.aws_route_table.public: Destroying... [id=rtb-0188b26adda5d7dc4]
+module.vpc.aws_route_table_association.private: Destruction complete after 1s
+module.vpc.aws_route_table.private: Destroying... [id=rtb-0c9f7f0fa23a4ca64]
+module.vpc.aws_route_table.public: Destruction complete after 2s
+module.vpc.aws_route_table.private: Destruction complete after 2s
+module.vpc.aws_nat_gateway.this: Destroying... [id=nat-0a7c66876c1ec1303]
+module.ec2.aws_instance.public: Still destroying... [id=i-073e034619aa930da, 00m10s elapsed]
+module.ec2.aws_instance.private: Still destroying... [id=i-0c9664f95230df4fb, 00m10s elapsed]
+module.vpc.aws_nat_gateway.this: Still destroying... [id=nat-0a7c66876c1ec1303, 00m10s elapsed]
+module.ec2.aws_instance.private: Still destroying... [id=i-0c9664f95230df4fb, 00m20s elapsed]
+module.ec2.aws_instance.public: Still destroying... [id=i-073e034619aa930da, 00m20s elapsed]
+module.vpc.aws_nat_gateway.this: Still destroying... [id=nat-0a7c66876c1ec1303, 00m20s elapsed]
+module.ec2.aws_instance.private: Still destroying... [id=i-0c9664f95230df4fb, 00m30s elapsed]
+module.ec2.aws_instance.public: Still destroying... [id=i-073e034619aa930da, 00m30s elapsed]
+module.ec2.aws_instance.public: Destruction complete after 32s
+module.vpc.aws_nat_gateway.this: Still destroying... [id=nat-0a7c66876c1ec1303, 00m30s elapsed]
+module.ec2.aws_instance.private: Still destroying... [id=i-0c9664f95230df4fb, 00m40s elapsed]
+module.ec2.aws_instance.private: Destruction complete after 42s
+module.vpc.aws_subnet.private: Destroying... [id=subnet-0df722966ab7e6373]
+module.security_group.aws_security_group.private_ec2: Destroying... [id=sg-08489635a6cf62f3f]
+module.vpc.aws_nat_gateway.this: Still destroying... [id=nat-0a7c66876c1ec1303, 00m40s elapsed]
+module.vpc.aws_subnet.private: Destruction complete after 2s
+module.security_group.aws_security_group.private_ec2: Destruction complete after 2s
+module.security_group.aws_security_group.public_ec2: Destroying... [id=sg-04423f6e0a008ab4c]
+module.security_group.aws_security_group.public_ec2: Destruction complete after 1s
+module.vpc.aws_nat_gateway.this: Destruction complete after 44s
+module.vpc.aws_internet_gateway.this: Destroying... [id=igw-0bf2dea7fe6cc3d91]
+module.vpc.aws_subnet.public: Destroying... [id=subnet-05556ed9015bb0cf0]
+module.vpc.aws_eip.nat: Destroying... [id=eipalloc-02ebf8e33c35156e8]
+module.vpc.aws_internet_gateway.this: Destruction complete after 1s
+module.vpc.aws_subnet.public: Destruction complete after 1s
+module.vpc.aws_vpc.this: Destroying... [id=vpc-063a91c7d264c8f19]
+module.vpc.aws_eip.nat: Destruction complete after 2s
+module.vpc.aws_vpc.this: Destruction complete after 1s
+
+Destroy complete! Resources: 15 destroyed.
